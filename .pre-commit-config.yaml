@@ -12,6 +12,7 @@ repos:
         -   id: detect-private-key
         -   id: check-merge-conflict
         -   id: check-added-large-files
+          - id: end-of-file-fixer
     -   repo: https://github.com/myint/autoflake
         rev: v2.2.0
         hooks:
@@ -22,14 +23,31 @@ repos:
               - --remove-unused-variables
               - --remove-all-unused-imports
               - --expand-star-imports
-    -   repo: https://github.com/PyCQA/isort
+    -   repo: https://github.com/pycqa/isort
         rev: 5.12.0
         hooks:
-        -   id: isort
-            args:
-              - --profile
-              - black
-    -   repo: https://github.com/ambv/black
-        rev: 23.7.0
+          - id: isort
+            name: isort - Sort Python imports (auto-fixes)
+            args: [ "--profile", "black", "--filter-files" ]
+            exclude: test_example_module.py|run_pipeline.py
+    - repo: https://github.com/psf/black
+        rev: 22.8.0 # Replace by any tag/version: https://github.com/psf/black/tags
         hooks:
-        -   id: black
+          - id: black
+            name: black - consistent Python code formatting (auto-fixes)
+            language_version: python # Should be a command that runs python3.6+
+            exclude: test_example_module.py|run_pipeline.py    
+    - repo: https://github.com/PyCQA/flake8
+        rev: 5.0.4
+        hooks:
+          - id: flake8
+            name: flake8 - Python linting
+            exclude: test_example_module.py|run_pipeline.py
+    - repo: https://github.com/Yelp/detect-secrets
+        rev: v1.0.3
+        hooks:
+          - id: detect-secrets
+            name: detect-secrets - Detect secrets in staged code
+            args: [ "--baseline", ".secrets.baseline" ]
+            exclude: .*/tests/.*
+
